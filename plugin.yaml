@@ -1,0 +1,26 @@
+name: headway
+version: "0.1.0"
+manifest_version: 2
+api_version: 1
+description: "Proof-of-progress circuit breaker: different commands are not necessarily progress. Detects varied terminal, mutation, and read calls with unchanged workspace state and no new evidence, then injects a structured recovery packet; optional same-class enforcement."
+author: Rehan Aslam (hanii090)
+license: MIT
+homepage: https://github.com/hanii090/headway-hermes-plugin
+tags: [agent-loops, guardrails, observability, progress, circuit-breaker]
+requires_hermes: ">=0.21.6"
+provides_tools: []
+provides_hooks:
+  - pre_llm_call
+provides_middleware:
+  - tool_execution
+config_schema:
+  warn_after: {type: int, default: 4, label: "Append recovery notice after N unproductive calls"}
+  intervene_after: {type: int, default: 6, label: "Inject intervention / enable same-class blocking after N calls"}
+  mode: {type: string, default: advisory, label: "advisory injects notices; enforce blocks same-class thrashing"}
+  warmup_calls: {type: int, default: 2, label: "Initial observed calls exempt from the streak"}
+  evidence_window: {type: int, default: 40, label: "Number of normalized evidence hashes remembered per session"}
+  tried_limit: {type: int, default: 8, label: "Recent tool signatures included in recovery packet"}
+  max_file_bytes: {type: int, default: 1000000, label: "Per-file fingerprint sample cap (bytes)"}
+  max_total_bytes: {type: int, default: 20000000, label: "Total workspace content cap per fingerprint (bytes)"}
+  max_files: {type: int, default: 10000, label: "Maximum paths per workspace fingerprint"}
+  goal_limit: {type: int, default: 240, label: "Maximum characters of first user goal in packet"}
